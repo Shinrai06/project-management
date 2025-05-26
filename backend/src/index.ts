@@ -18,6 +18,7 @@ import authRoutes from "./routes/auth.route";
 import userRoutes from "./routes/user.route";
 import { isAuthenticated } from "./middlewares/isAuthenticated.middleware";
 import workspaceRoutes from "./routes/workspace.route";
+import memberRoutes from "./routes/member.route";
 
 const BASE_PATH = config.BASE_PATH;
 const REDIS_DEFAULT_TTL = 3600;
@@ -79,6 +80,7 @@ app.get(
 );
 
 app.use(`${BASE_PATH}/auth`, authRoutes);
+app.use(`${BASE_PATH}/member`, isAuthenticated, memberRoutes);
 app.use(`${BASE_PATH}/user`, isAuthenticated, userRoutes);
 app.use(`${BASE_PATH}/workspace`, isAuthenticated, workspaceRoutes);
 
@@ -87,9 +89,15 @@ app.use(errorHandler);
 app.listen(config.PORT, async () => {
   console.log(`Server listening at port ${config.PORT} in ${config.NODE_ENV}`);
 
-  console.log(`Services list: `);
+  console.log(
+    `########################### Services list: ########################################`
+  );
   await connectDatabase();
   await connectRedis();
+
+  console.log(
+    "########################### Logs: ########################################"
+  );
 });
 
 // time stamp: 3 hr

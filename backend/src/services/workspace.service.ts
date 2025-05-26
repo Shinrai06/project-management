@@ -5,16 +5,18 @@ import RoleModel from "../models/roles-permission.model";
 import UserModel from "../models/user.model";
 import WorkspaceModel from "../models/workspace.model";
 import { NotFoundExcpetion } from "../utils/appError";
+import TaskModel from "../models/task.model";
+import { TaskStatusEnum } from "../enums/task.enum";
 
 export const getAllWorkspacesUserIsMemberService = async (userId: string) => {
-  const user = await UserModel.findById(userId);
-  if (!user) {
-    throw new NotFoundExcpetion("User not found");
-  }
+  const memberships = await MemberModel.find({ userId })
+    .populate("workspaceId")
+    .select("-password")
+    .exec();
 
   // To select the required attributes only
-  const workspacesList = await WorkspaceModel.find({ owner: user._id }).select(
-    "_id name description"
+  const workspacesList = memberships.map(
+    (membership) => membership.workspaceId
   );
   return workspacesList;
 };
@@ -59,6 +61,89 @@ export const createWorkspaceService = async (
   return workspace;
 };
 
+export const getWorkspaceService = async (workspaceId: string) => {
+  const workspace = await WorkspaceModel.findById(workspaceId).exec();
+  if (!workspace) throw new NotFoundExcpetion("Workspace was not found");
+
+  const members = await MemberModel.find({ workspaceId }).populate("role");
+
+  const workspaceWithMembers = {
+    ...workspace.toObject(),
+    members,
+  };
+  return { workspace: workspaceWithMembers };
+};
+
+export const getWorkspaceMembersService = async (workspaceId: string) => {
+  const members = await MemberModel.find({ workspaceId })
+    .populate("userId", "name email profilePicture isActive")
+    .populate("role", "name");
+
+  const roles = await RoleModel.find({}, { name: 1, _id: 1 })
+    .select("-permission")
+    .lean();
+
+  return { members, roles };
+};
+
+export const getWorkspaceAnalyticsService = async (workspaceId: string) => {
+  const currentDate = new Date();
+
+  const totalTasks = await TaskModel.countDocuments({
+    workspace: workspaceId,
+  });
+
+  const overdueTasks = await TaskModel.countDocuments({
+    workspace: workspaceId,
+    dueDate: currentDate,
+    status: { $ne: TaskStatusEnum.RESOLVED },
+  });
+
+  const completedTasks = await TaskModel.countDocuments({
+    workspace: workspaceId,
+    status: TaskStatusEnum.RESOLVED,
+  });
+
+  const analytics = {
+    totalTasks,
+    overdueTasks,
+    completedTasks,
+  };
+
+  return { analytics };
+};
+
 export const updateWorkspaceService = async () => {};
 
 export const deleteWorkspaceService = async (workspaceId: string) => {};
+
+export const changeMemberRoleService = async (
+  workspaceId: string,
+  memberId: string,
+  roleId: string
+) => {
+  const workspace = await WorkspaceModel.findById(workspaceId).exec();
+  if (!workspace) {
+    throw new NotFoundExcpetion("Workspace not found");
+  }
+
+  // submit the role id to update the member role
+  const role = await RoleModel.findById(roleId).exec();
+  if (!role) {
+    throw new NotFoundExcpetion("Role Not found");
+  }
+
+  const member = await MemberModel.findOne({
+    userId: memberId,
+    workspaceId: workspaceId,
+  });
+
+  if (!member) {
+    throw new Error("Member not found in the workspace");
+  }
+
+  member.role = role;
+  await member.save();
+
+  return { member };
+};
