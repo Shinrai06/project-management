@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { useTypedDispatch } from "./hooks/useTypedDispatch";
+import { useTypedDispatch } from "./app/hooks/useTypedDispatch";
 import { getCounterValue, getUsersList } from "./app/selectors";
 import "./App.css";
 

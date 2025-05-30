@@ -1,21 +1,21 @@
 import type { AnyAction } from "redux-saga";
-import type { User } from "../types/user";
+import type { User } from "./types/user";
 
-export interface CounterState {
+export interface rootState {
   value: number;
   users: User[];
 }
 
-const initialState: CounterState = {
+const initialState: rootState = {
   value: 0,
   users: [],
 };
 
 // AnyAction so the first load will set the inital state
-export const counterReducer = (
-  state: CounterState = initialState,
+export const rootReducer = (
+  state: rootState = initialState,
   action: AnyAction
-): CounterState => {
+): rootState => {
   console.log(action.type);
   switch (action.type) {
     case "[shiva dev] increment counter clicked":
