@@ -3,21 +3,28 @@ import express, { NextFunction, Request, Response } from "express";
 
 import cors from "cors";
 import session from "cookie-session";
+import passport from "passport";
 import { config } from "./config/app.config";
 import connectDatabase from "./config/database.config";
 import { HTTPSTATUS } from "./config/http.config";
-import { errorHandler } from "./middlewares/errorHandler.middleware";
-import { asyncHandler } from "./middlewares/asyncHandler.middleware";
+import "./config/passport.config";
 import { redisClient, connectRedis } from "./config/redis.config";
 
-import "./config/passport.config";
-import passport from "passport";
-import authRoutes from "./routes/auth.route";
-import userRoutes from "./routes/user.route";
+import { asyncHandler } from "./middlewares/asyncHandler.middleware";
+import { errorHandler } from "./middlewares/errorHandler.middleware";
 import { isAuthenticated } from "./middlewares/isAuthenticated.middleware";
-import workspaceRoutes from "./routes/workspace.route";
+
+// metrics, to enable uncomment
+/*
+import { register } from "./config/metrics.config";
+import { prometheusMiddleware } from "./middlewares/prometheus.middleware";
+*/
+
+import authRoutes from "./routes/auth.route";
 import memberRoutes from "./routes/member.route";
 import projectRoutes from "./routes/project.route";
+import userRoutes from "./routes/user.route";
+import workspaceRoutes from "./routes/workspace.route";
 
 const BASE_PATH = config.BASE_PATH;
 const REDIS_DEFAULT_TTL = 3600;
@@ -48,6 +55,9 @@ app.use(
   })
 );
 
+//metrics middleware uncomment to enable
+//app.use(prometheusMiddleware);
+
 // To test redis route
 app.get(
   `/test`,
@@ -77,6 +87,13 @@ app.get(
     });
   })
 );
+
+/*  endpoint to expose metrics to Prometheus
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", register.contentType);
+  res.send(await register.metrics());
+});
+*/
 
 app.use(`${BASE_PATH}/auth`, authRoutes);
 app.use(`${BASE_PATH}/member`, isAuthenticated, memberRoutes);

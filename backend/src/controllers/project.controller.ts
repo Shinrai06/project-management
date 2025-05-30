@@ -3,13 +3,16 @@ import { asyncHandler } from "../middlewares/asyncHandler.middleware";
 import {
   createProjectSchema,
   projectIdScheam,
+  updateProjectSchema,
 } from "../validation/project.validation";
 import { workspaceIdSchema } from "../validation/workspace.validation";
 import {
   createProjectService,
+  deleteProjectByIdService,
   getAllProjectsInWorkspaceService,
   getProjectAnalyticsService,
   getProjectByIdandWorkspaceIdService,
+  updateProjectSerivce,
 } from "../services/project.service";
 import { HTTPSTATUS } from "../config/http.config";
 import { getMemberRoleInWorkspace } from "../services/member.service";
@@ -99,6 +102,47 @@ export const getProjectAnalyticsController = asyncHandler(
     return res.status(HTTPSTATUS.OK).json({
       message: "fetched project analytics successfully",
       analytics,
+    });
+  }
+);
+
+export const updateProjectController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const body = updateProjectSchema.parse(req.body);
+    const projectId = projectIdScheam.parse(req.params.projectId);
+    const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
+
+    const userId = req.user?._id;
+
+    const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
+    roleGuard(role, [Permissions.EDIT_PROJECT]);
+
+    const { project } = await updateProjectSerivce(
+      projectId,
+      workspaceId,
+      body
+    );
+    res.status(HTTPSTATUS.OK).json({
+      message: "updated project successfully",
+      project,
+    });
+  }
+);
+
+export const deleteProjectByIdController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const projectId = projectIdScheam.parse(req.params.projectId);
+    const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
+    const userId = req.user?._id;
+
+    const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
+    roleGuard(role, [Permissions.DELETE_PROJECT]);
+
+    const { project } = await deleteProjectByIdService(projectId, workspaceId);
+
+    res.status(HTTPSTATUS.OK).json({
+      message: "deleted project successfully",
+      project,
     });
   }
 );
