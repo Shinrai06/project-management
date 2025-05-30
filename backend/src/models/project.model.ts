@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface ProjectDocument extends Document {
   name: string;
-  description: string;
+  emoji: string;
   createdBy: mongoose.Types.ObjectId;
   workspace: mongoose.Types.ObjectId;
   createdAt: Date;
@@ -16,7 +16,7 @@ const projectSchema = new Schema<ProjectDocument>(
       required: true,
       trim: true,
     },
-    description: {
+    emoji: {
       type: String,
       required: false,
       trim: true,
