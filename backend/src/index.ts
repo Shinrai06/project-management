@@ -25,6 +25,7 @@ import memberRoutes from "./routes/member.route";
 import projectRoutes from "./routes/project.route";
 import userRoutes from "./routes/user.route";
 import workspaceRoutes from "./routes/workspace.route";
+import taskRoutes from "./routes/task.route";
 
 const BASE_PATH = config.BASE_PATH;
 // const REDIS_DEFAULT_TTL = 3600;
@@ -100,6 +101,7 @@ app.get("/metrics", async (req, res) => {
 app.use(`${BASE_PATH}/auth`, authRoutes);
 app.use(`${BASE_PATH}/member`, isAuthenticated, memberRoutes);
 app.use(`${BASE_PATH}/project`, isAuthenticated, projectRoutes);
+app.use(`${BASE_PATH}/task`, isAuthenticated, taskRoutes);
 app.use(`${BASE_PATH}/user`, isAuthenticated, userRoutes);
 app.use(`${BASE_PATH}/workspace`, isAuthenticated, workspaceRoutes);
 
