@@ -1,0 +1,35 @@
+name: Build backend container image
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: proj-mgmt-backend
+
+jobs:
+  docker:
+    name: Build image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: false
+          load: true
+
+      - name: Verify image is available locally
+        run: docker images | grep ${{ env.IMAGE_NAME }}
+
