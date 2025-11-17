@@ -8,7 +8,7 @@ import { config } from "./config/app.config";
 import connectDatabase from "./config/database.config";
 import { HTTPSTATUS } from "./config/http.config";
 import "./config/passport.config";
-import { redisClient, connectRedis } from "./config/redis.config";
+// import { redisClient, connectRedis } from "./config/redis.config";
 
 import { asyncHandler } from "./middlewares/asyncHandler.middleware";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
@@ -25,10 +25,11 @@ import memberRoutes from "./routes/member.route";
 import projectRoutes from "./routes/project.route";
 import userRoutes from "./routes/user.route";
 import workspaceRoutes from "./routes/workspace.route";
+import taskRoutes from "./routes/task.route";
 
 const BASE_PATH = config.BASE_PATH;
-const REDIS_DEFAULT_TTL = 3600;
-const USERS_LIST_KEY = "users-list";
+// const REDIS_DEFAULT_TTL = 3600;
+// const USERS_LIST_KEY = "users-list";
 
 const app = express();
 
@@ -59,6 +60,7 @@ app.use(
 //app.use(prometheusMiddleware);
 
 // To test redis route
+/*
 app.get(
   `/test`,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -78,6 +80,7 @@ app.get(
     res.status(HTTPSTATUS.OK).json(users_list);
   })
 );
+*/
 
 app.get(
   `/`,
@@ -98,6 +101,7 @@ app.get("/metrics", async (req, res) => {
 app.use(`${BASE_PATH}/auth`, authRoutes);
 app.use(`${BASE_PATH}/member`, isAuthenticated, memberRoutes);
 app.use(`${BASE_PATH}/project`, isAuthenticated, projectRoutes);
+app.use(`${BASE_PATH}/task`, isAuthenticated, taskRoutes);
 app.use(`${BASE_PATH}/user`, isAuthenticated, userRoutes);
 app.use(`${BASE_PATH}/workspace`, isAuthenticated, workspaceRoutes);
 
@@ -110,7 +114,7 @@ app.listen(config.PORT, async () => {
     `########################### Services list: ########################################`
   );
   await connectDatabase();
-  await connectRedis();
+  // await connectRedis();
 
   console.log(
     "########################### Logs: ########################################"

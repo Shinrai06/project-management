@@ -1,9 +1,11 @@
 import { Router } from "express";
 import {
   createProjectController,
+  deleteProjectByIdController,
   getAllProjectsInWorkspaceController,
   getProjectAnalyticsController,
   getProjectByIdAndWorkspaceIdController,
+  updateProjectController,
 } from "../controllers/project.controller";
 
 const projectRoutes = Router();
@@ -24,6 +26,16 @@ projectRoutes.get(
 projectRoutes.get(
   "/:projectId/workspace/:workspaceId/analytics",
   getProjectAnalyticsController
+);
+
+projectRoutes.put(
+  "/:projectId/workspace/:workspaceId/update",
+  updateProjectController
+);
+
+projectRoutes.delete(
+  "/:projectId/workspace/:workspaceId/delete",
+  deleteProjectByIdController
 );
 
 export default projectRoutes;

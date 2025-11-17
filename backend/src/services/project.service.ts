@@ -117,4 +117,49 @@ export const getProjectAnalyticsService = async (
   };
   return { analytics };
 };
- 
+
+export const updateProjectSerivce = async (
+  projectId: string,
+  workspaceId: string,
+  body: {
+    name: string;
+    emoji?: string;
+    description?: string;
+  }
+) => {
+  const { name, emoji, description } = body;
+  const project = await ProjectModel.findOne({
+    _id: projectId,
+    workspace: workspaceId,
+  });
+  if (!project) {
+    throw new NotFoundExcpetion("project not found");
+  }
+  if (name !== undefined) project.name = name;
+  if (emoji !== undefined) project.emoji = emoji;
+  if (description !== undefined) project.description = description;
+
+  await project.save();
+  return { project };
+};
+
+export const deleteProjectByIdService = async (
+  projectId: string,
+  workspaceId: string
+) => {
+  const project = await ProjectModel.findOne({
+    _id: projectId,
+    workspace: workspaceId,
+  });
+
+  if (!project) {
+    throw new NotFoundExcpetion("project not found");
+  }
+
+  await project.deleteOne();
+  await TaskModel.deleteMany({
+    project: project._id,
+  });
+
+  return { project };
+};
