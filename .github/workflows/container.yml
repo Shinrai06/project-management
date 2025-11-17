@@ -3,7 +3,7 @@ name: Build backend container image
 on:
   push:
     branches:
-      - main
+      - '*'
   workflow_dispatch:
 
 env:
@@ -29,6 +29,7 @@ jobs:
           file: ./backend/Dockerfile
           push: false
           load: true
+          tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Verify image is available locally
         run: docker images | grep ${{ env.IMAGE_NAME }}
