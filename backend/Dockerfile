@@ -9,7 +9,6 @@ RUN npm ci
 FROM deps AS builder
 COPY tsconfig.json ./
 COPY src ./src
-COPY @types ./@types
 RUN npm run build
 
 FROM base AS runner
