@@ -30,6 +30,13 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }} 
+        
+      - name: Set lowercase image tag
+        id: image-tag
+        run: |
+          OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
+          echo "tag=${{ env.REGISTRY }}/${OWNER_LOWER}/${IMAGE_LOWER}:latest" >> $GITHUB_OUTPUT
 
       - name: Build image and Push to GHCR
         uses: docker/build-push-action@v6
@@ -37,7 +44,8 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+          load: true
+          tags:  ${{ steps.image-tag.outputs.tag }}
 
       - name: Verify image is available locally
         run: docker images | grep ${{ env.IMAGE_NAME }}
