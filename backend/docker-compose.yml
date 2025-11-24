@@ -1,9 +1,6 @@
 services:
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: proj_mgmt-backend
+    image: ghcr.io/shinrai06/proj-mgmt-backend:latest
     container_name: proj_mgmt-backend
     env_file:
       - .env
