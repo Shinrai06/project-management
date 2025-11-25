@@ -1,3 +1,5 @@
+> **Note:** This project is built over the [Advanced MERN B2B Teams Project Management SaaS](https://github.com/TechWithEmmaYT/Advanced-MERN-B2B-Teams-Project-Management-Saas/tree/main) repository.
+
 ## Running Prometheus with Docker (Windows - Git Bash)
 
 To start Prometheus using Docker with your local `prometheus.yml` config file, run the following command:
