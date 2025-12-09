@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: proj-mgmt-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # PORT is automatically set by Render - no need to configure it
+    healthCheckPath: /
+    autoDeploy: true
+
