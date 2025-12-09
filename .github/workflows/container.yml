@@ -9,6 +9,10 @@ on:
       - '**/README.md'
       - 'readme.md'
       - '**/readme.md'
+      - 'DEPLOYMENT.md'
+      - 'deployment.md'
+      - '**/DEPLOYMENT.md'
+      - '**/deployment.md'
   workflow_dispatch:
 
 env:

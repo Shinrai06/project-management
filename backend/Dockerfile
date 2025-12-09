@@ -19,6 +19,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 COPY --from=builder /app/dist ./dist
 
-EXPOSE 3000
+# Render sets PORT automatically, app uses PORT env var (defaults to 5000)
+EXPOSE 5000
 CMD ["node", "dist/index.js"]
 
