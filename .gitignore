@@ -1,6 +1,5 @@
 # Node modules (backend & frontend)
 backend/node_modules/
-frontend/node_modules/
 
 # Logs
 **/*.log
@@ -10,13 +9,10 @@ yarn-error.log*
 
 # Environment files
 backend/.env
-frontend/.env
 .env
 
 # Build outputs
 backend/dist/
-frontend/dist/
-frontend/build/
 
 # TypeScript
 **/*.tsbuildinfo
@@ -30,12 +26,6 @@ Thumbs.db
 # Coverage reports
 coverage/
 backend/coverage/
-frontend/coverage/
 
 # Test cache
 backend/.jest/
-frontend/.jest/
-
-# Optional: ignore package-lock or yarn.lock if using one over the other
-# /backend/package-lock.json
-# /frontend/yarn.lock
