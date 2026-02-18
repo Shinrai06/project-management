@@ -1,0 +1,49 @@
+services:
+  # Backend API service (private)
+  - type: web
+    name: proj-mgmt-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8000
+      - key: MONGO_URI
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: SESSION_EXPIRES_IN
+        value: 24h
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CALLBACK_URL
+        sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: FRONTEND_GOOGLE_CALLBACK_URL
+        sync: false
+      - key: BASE_PATH
+        value: /api
+    healthCheckPath: /
+    autoDeploy: true
+
+  # Nginx reverse proxy (public-facing)
+  - type: web
+    name: proj-mgmt-nginx
+    runtime: docker
+    dockerfilePath: ./nginx/Dockerfile
+    dockerContext: ./nginx
+    plan: free
+    envVars:
+      - key: BACKEND_URL
+        value: http://proj-mgmt-backend:8000
+    healthCheckPath: /health
+    autoDeploy: true
+    # Make this the main service by setting it as the primary
+    domains:
+      - name: https://project-management-backend-aun2.onrender.com
